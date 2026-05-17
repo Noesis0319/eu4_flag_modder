@@ -1,0 +1,7 @@
+﻿spriteTypes = {
+	spriteType = {
+		name = "TRADE_GOODS_FURS_FISH_AND_SALT_eventPicture"
+		texturefile = "gfx/event_pictures/내_EU4_모드22/TRADE_GOODS_FURS_FISH_AND_SALT_eventPicture.dds"
+		alwaystransparent = yes
+	}
+}

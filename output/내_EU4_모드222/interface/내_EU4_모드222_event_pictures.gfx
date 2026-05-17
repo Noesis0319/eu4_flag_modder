@@ -1,0 +1,7 @@
+﻿spriteTypes = {
+	spriteType = {
+		name = "AULIC_COUNCIL_eventPicture"
+		texturefile = "gfx/event_pictures/내_EU4_모드222/AULIC_COUNCIL_eventPicture.dds"
+		alwaystransparent = yes
+	}
+}

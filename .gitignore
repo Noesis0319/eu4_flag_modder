@@ -1,0 +1,8 @@
+# 부산물 / 산출물 (noesis 공통 규칙 — noesis\CLAUDE.md)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 생성 산출물 (EU4 모드 패키지)
+output/

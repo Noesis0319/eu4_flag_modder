@@ -1126,9 +1126,9 @@ class FlagModderApp(tk.Tk):
             for e in self.loc_entries]
 
         output_root = Path(self.output_dir_var.get())
-        output_root.mkdir(parents=True, exist_ok=True)
 
         try:
+            output_root.mkdir(parents=True, exist_ok=True)
             result = build_mod(
                 mod_name=mod_name,
                 flag_entries=flag_entries,

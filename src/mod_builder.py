@@ -53,6 +53,18 @@ def safe_mod_id(name: str) -> str:
     return s or "custom_mod"
 
 
+def replace_dir(new_dir: Path, dest: Path) -> None:
+    """dest 를 new_dir 로 바꿔 넣는다. 있던 dest 는 바꿔 넣은 뒤에 지운다"""
+    old = dest.with_name(dest.name + ".old")
+    if old.exists():
+        shutil.rmtree(old)
+    if dest.exists():
+        dest.rename(old)
+    new_dir.rename(dest)
+    if old.exists():
+        shutil.rmtree(old)
+
+
 def write_descriptor(path: Path, mod_name: str, has_thumb: bool,
                      supported_version: str = "1.37.*") -> None:
     lines = [
@@ -137,9 +149,9 @@ def build_mod(mod_name: str,
         raise ValueError("최소 1개 이상의 자산이 필요합니다.")
 
     mod_id = safe_mod_id(mod_name)
-    mod_dir = output_root / mod_id
-
-    # 기존 출력 폴더 비우기 (안전하게: 같은 모드명 재빌드)
+    final_dir = output_root / mod_id
+    # 새 폴더에 만들고 끝에 바꿔 넣는다 — 도중에 실패해도 있던 모드는 그대로고, 있던 모드 안의 원본도 읽힌다
+    mod_dir = output_root / f"{mod_id}.building"
     if mod_dir.exists():
         shutil.rmtree(mod_dir)
     mod_dir.mkdir(parents=True, exist_ok=True)
@@ -202,6 +214,8 @@ def build_mod(mod_name: str,
 
     write_descriptor(mod_dir / "descriptor.mod", mod_name, has_thumb,
                      supported_version)
+    replace_dir(mod_dir, final_dir)
+    mod_dir = final_dir
 
     installed_mod_file = None
     installed_mod_dir = None
@@ -210,9 +224,12 @@ def build_mod(mod_name: str,
         eu4_mod_dir = user_dir / "mod"
         eu4_mod_dir.mkdir(parents=True, exist_ok=True)
         target_dir = eu4_mod_dir / mod_id
-        if target_dir.exists():
-            shutil.rmtree(target_dir)
-        shutil.copytree(mod_dir, target_dir)
+        if target_dir.resolve() != mod_dir.resolve():
+            staged = eu4_mod_dir / f"{mod_id}.building"
+            if staged.exists():
+                shutil.rmtree(staged)
+            shutil.copytree(mod_dir, staged)
+            replace_dir(staged, target_dir)
         root_mod_file = eu4_mod_dir / f"{mod_id}.mod"
         write_root_mod_file(root_mod_file, mod_name, target_dir, has_thumb,
                             supported_version)

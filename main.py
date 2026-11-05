@@ -1867,7 +1867,6 @@ class FlagModderApp(tk.Tk):
         self._log("선택 초기화됨.")
 
     def on_load_mod(self):
-        """기존 모드 폴더를 불러와 selections 채움. 이후 수정 후 재빌드."""
         initial = self.user_dir_var.get() or "."
         mod_root = Path(initial) / "mod"
         if mod_root.is_dir():
@@ -1880,8 +1879,10 @@ class FlagModderApp(tk.Tk):
             initialdir=initial)
         if not folder:
             return
+        self.load_mod_folder(Path(folder))
 
-        mod_dir = Path(folder)
+    def load_mod_folder(self, mod_dir: Path):
+        """기존 모드 폴더를 불러와 selections 채움. 이후 수정 후 재빌드."""
         descriptor = mod_dir / "descriptor.mod"
         if not descriptor.is_file():
             messagebox.showerror(

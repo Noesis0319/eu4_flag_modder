@@ -70,7 +70,8 @@ DEFAULT_GAME_DIR = Path(
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "output"
+# onefile exe 에서는 __file__ 이 임시 풀림 폴더라 문서 폴더 아래로
+DEFAULT_OUTPUT_DIR = (Path.home() / "Documents" / APP_NAME / "output") if getattr(sys, "frozen", False) else PROJECT_ROOT / "output"
 
 
 def settings_path() -> Path:

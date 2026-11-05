@@ -77,8 +77,11 @@ def build_icons(mod_dir: Path, entries: list[IconEntry],
         return []
     converted: list[str] = []
     for e in entries:
+        rel = Path(e.game_rel_path)
+        if rel.is_absolute() or ".." in rel.parts or rel.suffix.lower() != ".dds":
+            raise ValueError(f"아이콘 경로는 게임 폴더 기준 상대 .dds 경로여야 한다: {e.game_rel_path}")
         # 원본 사이즈 검출 (없으면 256x256 기본)
-        original = game_dir / e.game_rel_path
+        original = game_dir / rel
         size = (256, 256)
         if original.is_file():
             try:
@@ -86,7 +89,7 @@ def build_icons(mod_dir: Path, entries: list[IconEntry],
                     size = im.size
             except Exception:
                 pass
-        dst = mod_dir / e.game_rel_path
+        dst = mod_dir / rel
         to_icon_dds(Path(e.source_image), dst, size, fit_mode=e.fit_mode)
         converted.append(e.game_rel_path)
     return converted

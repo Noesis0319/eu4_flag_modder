@@ -30,8 +30,11 @@ class LocEntry:
     language: str = "korean"
 
 
+KEY_RE = re.compile(r"[A-Za-z0-9_.\-]+")
+
+
 def _yml_escape(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', '\\"')
+    return s.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
 
 
 def build_localisation(mod_dir: Path, mod_id: str,
@@ -53,6 +56,8 @@ def build_localisation(mod_dir: Path, mod_id: str,
         # 키 중복 방지: 같은 키는 마지막 정의가 이김
         seen: dict[str, str] = {}
         for it in items:
+            if not KEY_RE.fullmatch(it.key):
+                raise ValueError(f"로컬 키는 영문·숫자·_ . - 만: {it.key!r}")
             seen[it.key] = (
                 f' {it.key}:{it.version} "{_yml_escape(it.value)}"')
         lines.extend(seen.values())
@@ -85,7 +90,7 @@ def parse_localisation_file(path: Path) -> tuple[str, list[LocEntry]]:
         if m:
             key, ver, val = m.group(1), int(m.group(2)), m.group(3)
             # 역이스케이프
-            val = val.replace('\\"', '"').replace("\\\\", "\\")
+            val = val.replace("\\n", "\n").replace('\\"', '"').replace("\\\\", "\\")
             entries.append(LocEntry(
                 key=key, value=val, version=ver, language=lang))
     return lang, entries

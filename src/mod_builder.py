@@ -68,7 +68,7 @@ def replace_dir(new_dir: Path, dest: Path) -> None:
 def write_descriptor(path: Path, mod_name: str, has_thumb: bool,
                      supported_version: str = "1.37.*") -> None:
     lines = [
-        f'name="{mod_name}"',
+        f'name="{mod_name.replace(chr(34), chr(39))}"',
         f'supported_version="{supported_version}"',
         'tags={',
         '\t"Graphics"',
@@ -87,7 +87,7 @@ def write_root_mod_file(path: Path, mod_name: str, mod_dir: Path,
                         supported_version: str = "1.37.*") -> None:
     posix_path = str(mod_dir).replace("\\", "/")
     lines = [
-        f'name="{mod_name}"',
+        f'name="{mod_name.replace(chr(34), chr(39))}"',
         f'path="{posix_path}"',
         f'supported_version="{supported_version}"',
         'tags={',

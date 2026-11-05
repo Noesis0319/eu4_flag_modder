@@ -50,7 +50,7 @@ from src.music_builder import (
 from src.loading_screens import (
     LoadingScreenEntry, LOADING_SCREEN_COUNT, LOADING_SCREEN_SIZE,
 )
-from src.sounds import SoundEntry, SOUND_GROUPS, parse_sound_assets
+from src.sounds import SoundEntry, SOUND_GROUPS, SOUND_KEY_RE, parse_sound_assets
 from src.ui_icons import IconEntry, ICON_PRESETS, scan_icons_in_mod
 from src.ideas import (
     IdeaGroupEntry, IdeaSlot, MODIFIER_CATALOG, safe_key as safe_idea_key,
@@ -1331,6 +1331,15 @@ class FlagModderApp(tk.Tk):
         except ValueError:
             messagebox.showerror("오류", "인덱스는 정수여야 합니다.")
             return
+        if idx_int < 0:
+            messagebox.showerror("오류", "인덱스는 0 이상이어야 합니다.")
+            return
+        if not Path(path).is_file():
+            messagebox.showerror("오류", f"파일을 찾을 수 없습니다:\n{path}")
+            return
+        if any(e["index"] == idx_int for e in self.loading_entries):
+            messagebox.showerror("오류", f"인덱스 {idx_int} 는 이미 있습니다.")
+            return
         self.loading_entries.append({
             "index": idx_int, "source": Path(path),
             "fit_mode": self.loading_fit_var.get()})
@@ -1527,6 +1536,9 @@ class FlagModderApp(tk.Tk):
         if not key:
             return
         key = key.strip()
+        if not SOUND_KEY_RE.fullmatch(key):
+            messagebox.showerror("오류", "사운드 키는 영문·숫자·_ 만 됩니다.")
+            return
         self._ensure_extra_sound(key)
         self.sounds_tree.selection_set(f"snd::{key}")
         self.on_sound_select()

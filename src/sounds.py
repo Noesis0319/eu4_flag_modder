@@ -106,6 +106,9 @@ def _convert_to_wav(src: Path, dst: Path, ff: Path) -> None:
             f"ffmpeg 변환 실패 ({src.name}):\n" + "\n".join(tail))
 
 
+SOUND_KEY_RE = re.compile(r"[A-Za-z0-9_]+")
+
+
 def build_sounds(mod_dir: Path, mod_id: str,
                  entries: list[SoundEntry]) -> list[str]:
     """sound/*.wav 복사 + mod_id.asset 으로 본체 키 덮어쓰기."""
@@ -123,6 +126,8 @@ def build_sounds(mod_dir: Path, mod_id: str,
         src = Path(e.source_file)
         if not src.is_file():
             raise RuntimeError(f"사운드 파일을 찾을 수 없음: {src}")
+        if not SOUND_KEY_RE.fullmatch(e.key):
+            raise ValueError(f"사운드 키는 영문·숫자·_ 만: {e.key!r}")
         if e.key in used_names:
             continue
         used_names.add(e.key)

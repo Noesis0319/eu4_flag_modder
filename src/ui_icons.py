@@ -64,7 +64,7 @@ class IconEntry:
 
 def to_icon_dds(src: Path, dst: Path, target_size: tuple[int, int],
                 fit_mode: str = "cover") -> None:
-    img = Image.open(src).convert("RGB")
+    img = Image.open(src).convert("RGBA")  # 투명도를 살린 무압축 RGBA DDS
     out = _fit(img, target_size, fit_mode)
     dst.parent.mkdir(parents=True, exist_ok=True)
     out.save(dst, format="DDS")

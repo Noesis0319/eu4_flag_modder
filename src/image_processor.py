@@ -21,7 +21,8 @@ def _fit(src: Image.Image, size: tuple[int, int], fit_mode: str,
         scale = min(tw / sw, th / sh)
         nw, nh = max(1, int(sw * scale)), max(1, int(sh * scale))
         resized = src.resize((nw, nh), Image.LANCZOS)
-        out = Image.new("RGB", size, bg_color)
+        bg = tuple(bg_color) + (0,) if src.mode == "RGBA" and len(bg_color) == 3 else bg_color
+        out = Image.new(src.mode, size, bg)
         out.paste(resized, ((tw - nw) // 2, (th - nh) // 2))
         return out
     # cover

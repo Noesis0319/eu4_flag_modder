@@ -6,3 +6,10 @@ venv/
 
 # 생성 산출물 (EU4 모드 패키지)
 output/
+
+# PyInstaller 빌드 산출물
+build/
+dist/
+*.spec
+# 직접 작성해 build_exe.bat 가 쓰는 spec 은 추적한다
+!EU4ModMaker.spec

@@ -225,6 +225,15 @@ def write_idea_locs(entry: IdeaGroupEntry) -> list[str]:
     return out
 
 
+def loc_keys_of(key: str) -> set[str]:
+    """write_idea_locs 가 쓰는 로컬 키 집합 (표시명·전통·야망·아이디어 1~7 과 설명)"""
+    keys = {key, f"{key}_start", f"{key}_bonus"}
+    for i in range(1, 8):
+        keys.add(f"{key}_{i}")
+        keys.add(f"{key}_{i}_desc")
+    return keys
+
+
 def build_ideas(mod_dir: Path, mod_id: str,
                 entries: Iterable[IdeaGroupEntry]) -> list[str]:
     entries = list(entries)

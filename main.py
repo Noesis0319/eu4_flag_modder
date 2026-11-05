@@ -57,6 +57,7 @@ from src.ui_icons import IconEntry, ICON_PRESETS, scan_icons_in_mod
 from src.ideas import (
     IdeaGroupEntry, IdeaSlot, MODIFIER_CATALOG, safe_key as safe_idea_key,
     parse_idea_groups,
+    loc_keys_of,
 )
 from src.localisation import (
     LocEntry, SUPPORTED_LANGUAGES, parse_localisation_dir,
@@ -2000,7 +2001,7 @@ class FlagModderApp(tk.Tk):
                           for s in ig.ideas],
             })
             loaded_ideas.append(ig.key)
-            idea_loc_keys.update(idea_loc_keys_of(ig.key))
+            idea_loc_keys.update(loc_keys_of(ig.key))
         self._refresh_idea_groups_tree()
 
         # 로컬라이제이션 스캔

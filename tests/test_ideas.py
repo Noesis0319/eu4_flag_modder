@@ -62,3 +62,14 @@ def test_safe_key():
     assert safe_key(" My Korean-Ideas! ") == "my_korean_ideas"
     assert safe_key("") == "my_ideas"
     assert safe_key("###") == "my_ideas"
+
+
+def test_loc_keys_of_matches_written_keys():
+    from src.ideas import IdeaGroupEntry, IdeaSlot, loc_keys_of, write_idea_locs
+    entry = IdeaGroupEntry(key="kor_ideas", display_name="조선")
+    entry.tradition = IdeaSlot(display_name="전통")
+    entry.ambition = IdeaSlot(display_name="야망")
+    entry.ideas = [IdeaSlot(display_name=f"아이디어 {i}", description=f"설명 {i}") for i in range(1, 8)]
+    written = {line.strip().split(":")[0] for line in write_idea_locs(entry)}
+    assert written == loc_keys_of("kor_ideas")
+

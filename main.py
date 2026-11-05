@@ -81,8 +81,9 @@ class _LogPane(logging.Handler):
 DEFAULT_GAME_DIR = EU4_GAME_DIR_DEFAULT
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-# onefile exe 에서는 __file__ 이 임시 풀림 폴더라 문서 폴더 아래로
-DEFAULT_OUTPUT_DIR = (Path.home() / "Documents" / APP_NAME / "output") if getattr(sys, "frozen", False) else PROJECT_ROOT / "output"
+# exe 는 문서 폴더 아래, 개발 실행은 산출물 루트(D:\out, D: 가 없으면 C:\dev\out) 아래
+DEFAULT_OUTPUT_DIR = ((Path.home() / "Documents" / APP_NAME / "output") if getattr(sys, "frozen", False)
+                      else (Path(r"D:\out") if Path("D:/").exists() else Path(r"C:\dev\out")) / "eu4_flag_modder" / "output")
 
 
 def settings_path() -> Path:

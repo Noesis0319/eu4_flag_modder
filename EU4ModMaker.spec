@@ -2,10 +2,10 @@
 """PyInstaller spec for EU4 모드 제작기.
 
 빌드:
-    pyinstaller --clean EU4ModMaker.spec
+    build_exe.bat (산출물 루트 아래 build·dist 로)
 
 산출물:
-    dist/EU4ModMaker.exe  (단일 파일, 콘솔 창 없음)
+    <out root>/eu4_flag_modder/dist/EU4ModMaker.exe  (단일 파일, 콘솔 창 없음)
 """
 
 import sys

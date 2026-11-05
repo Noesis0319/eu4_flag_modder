@@ -1,8 +1,10 @@
 @echo off
 REM EU4 Mod Maker - single-file exe build script
-REM Output: dist\EU4ModMaker.exe (standalone, no Python required)
+REM Output: <out root>\eu4_flag_modder\dist\EU4ModMaker.exe (standalone, no Python required)
+REM out root: D:\out, or C:\dev\out on a PC without D:
 
 cd /d "%~dp0"
+if exist D:\ (set "OUT=D:\out\eu4_flag_modder") else (set "OUT=C:\dev\out\eu4_flag_modder")
 
 echo === [1/3] Installing dependencies ===
 python -m pip install --upgrade pip
@@ -13,16 +15,16 @@ python -m pip install pyinstaller
 if errorlevel 1 goto :fail
 
 echo === [2/3] Cleaning previous build ===
-if exist build rmdir /s /q build
-if exist dist  rmdir /s /q dist
+if exist "%OUT%\build" rmdir /s /q "%OUT%\build"
+if exist "%OUT%\dist"  rmdir /s /q "%OUT%\dist"
 
 echo === [3/3] Running PyInstaller ===
-python -m PyInstaller --clean --noconfirm EU4ModMaker.spec
+python -m PyInstaller --clean --noconfirm --workpath "%OUT%\build" --distpath "%OUT%\dist" EU4ModMaker.spec
 if errorlevel 1 goto :fail
 
 echo.
 echo === BUILD SUCCESS ===
-echo Output: %CD%\dist\EU4ModMaker.exe
+echo Output: %OUT%\dist\EU4ModMaker.exe
 echo Distribute this single file (no Python / Pillow needed).
 echo.
 pause

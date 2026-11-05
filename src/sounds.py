@@ -12,12 +12,15 @@ EU4 의 게임 코드에 하드코딩된 sound name 들을 큐레이션해서 �
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+
+log = logging.getLogger("eu4modmaker")
 
 from .music_builder import ffmpeg_path
 
@@ -171,7 +174,8 @@ def parse_sound_assets(mod_dir: Path) -> list[tuple[str, Path]]:
     for asset in sorted(sd.glob("*.asset")):
         try:
             text = asset.read_text(encoding="utf-8-sig", errors="replace")
-        except Exception:
+        except Exception as e:
+            log.warning("불러오기 건너뜀: %s (%s)", asset, e)
             continue
         for name, fname in _SOUND_ASSET_RE.findall(text):
             wav = sd / fname

@@ -9,10 +9,13 @@ UI 단순화: 사용자가 9개 슬롯(전통/야망/아이디어1~7) 각각에 
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
+
+log = logging.getLogger("eu4modmaker")
 
 
 # ========== modifier 카탈로그 ==========
@@ -261,7 +264,8 @@ def parse_idea_groups(mod_dir: Path) -> list[IdeaGroupEntry]:
     for txt in sorted(ideas_dir.glob("*.txt")):
         try:
             text = txt.read_text(encoding="utf-8-sig", errors="replace")
-        except Exception:
+        except Exception as e:
+            log.warning("불러오기 건너뜀: %s (%s)", txt, e)
             continue
         # 주석 제거
         text = re.sub(r"#.*", "", text)

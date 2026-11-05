@@ -8,12 +8,15 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+
+log = logging.getLogger("eu4modmaker")
 
 
 # 재생 조건 프리셋: (한글 라벨, EU4 modifier 블록 본문)
@@ -157,7 +160,8 @@ def parse_music_assets(mod_dir: Path) -> list[tuple[str, Path]]:
     for asset in sorted(music_dir.glob("*.asset")):
         try:
             text = asset.read_text(encoding="utf-8-sig", errors="replace")
-        except Exception:
+        except Exception as e:
+            log.warning("불러오기 건너뜀: %s (%s)", asset, e)
             continue
         for name, fname in _ASSET_BLOCK.findall(text):
             ogg = music_dir / fname
@@ -175,7 +179,8 @@ def parse_song_presets(mod_dir: Path) -> dict[str, str]:
     for songs in sorted(music_dir.glob("*_songs.txt")):
         try:
             text = songs.read_text(encoding="utf-8-sig", errors="replace")
-        except Exception:
+        except Exception as e:
+            log.warning("불러오기 건너뜀: %s (%s)", songs, e)
             continue
         # 간단한 두 번째 파싱: 각 song 블록의 name + modifier 문자열 비교
         for m in re.finditer(

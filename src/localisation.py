@@ -13,10 +13,13 @@ EU4 YAML 형식:
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
+
+log = logging.getLogger("eu4modmaker")
 
 
 SUPPORTED_LANGUAGES = ["korean", "english", "french", "german", "spanish"]
@@ -105,6 +108,7 @@ def parse_localisation_dir(mod_dir: Path) -> list[LocEntry]:
         try:
             _lang, entries = parse_localisation_file(yml)
             out.extend(entries)
-        except Exception:
+        except Exception as e:
+            log.warning("불러오기 건너뜀: %s (%s)", yml, e)
             continue
     return out

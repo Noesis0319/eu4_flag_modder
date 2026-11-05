@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import sys
@@ -64,6 +65,17 @@ from src.localisation import (
 # ----------------------------- 환경/설정 -----------------------------
 
 APP_NAME = "EU4FlagModder"
+
+
+class _LogPane(logging.Handler):
+    """src 모듈의 경고를 화면 로그 칸에 보인다"""
+
+    def __init__(self, app):
+        super().__init__()
+        self.app = app
+
+    def emit(self, record):
+        self.app._log(self.format(record))
 
 DEFAULT_GAME_DIR = Path(
     "C:/Program Files (x86)/Steam/steamapps/common/Europa Universalis IV"
@@ -154,6 +166,10 @@ class FlagModderApp(tk.Tk):
         self._preview_imgs: dict[str, ImageTk.PhotoImage] = {}
 
         self._build_ui()
+        handler = _LogPane(self)
+        handler.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
+        logging.getLogger("eu4modmaker").addHandler(handler)
+        logging.getLogger("eu4modmaker").setLevel(logging.INFO)
         self._populate_country_tree()
         self._populate_event_tree()
         self._populate_icons_tree()

@@ -37,6 +37,7 @@ from src.mod_builder import (
     EventPictureEntry,
     build_mod,
     EU4_USER_DIR_DEFAULT,
+    EU4_GAME_DIR_DEFAULT,
 )
 from src.music_builder import (
     MusicEntry,
@@ -77,9 +78,7 @@ class _LogPane(logging.Handler):
     def emit(self, record):
         self.app._log(self.format(record))
 
-DEFAULT_GAME_DIR = Path(
-    "C:/Program Files (x86)/Steam/steamapps/common/Europa Universalis IV"
-)
+DEFAULT_GAME_DIR = EU4_GAME_DIR_DEFAULT
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 # onefile exe 에서는 __file__ 이 임시 풀림 폴더라 문서 폴더 아래로

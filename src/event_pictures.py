@@ -6,7 +6,7 @@
 교체합니다.
 """
 
-EVENT_PICTURE_SIZE = (512, 132)
+from .image_processor import EVENT_PICTURE_SIZE  # noqa: F401
 
 # 카테고리 한글 라벨 (폴더 → 한글)
 CATEGORY_LABELS = {

@@ -32,6 +32,7 @@ from .localisation import LocEntry, build_localisation
 EU4_USER_DIR_DEFAULT = (
     Path.home() / "Documents" / "Paradox Interactive" / "Europa Universalis IV"
 )
+EU4_GAME_DIR_DEFAULT = Path("C:/Program Files (x86)/Steam/steamapps/common/Europa Universalis IV")
 
 
 @dataclass
@@ -192,8 +193,7 @@ def build_mod(mod_name: str,
     converted_icons: list[str] = []
     if icon_entries:
         if game_dir is None:
-            game_dir = Path(
-                "C:/Program Files (x86)/Steam/steamapps/common/Europa Universalis IV")
+            game_dir = EU4_GAME_DIR_DEFAULT
         converted_icons = build_icons(mod_dir, icon_entries, game_dir)
 
     converted_ideas: list[str] = []

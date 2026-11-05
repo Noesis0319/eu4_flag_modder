@@ -5,10 +5,15 @@
 """
 
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageOps
 
 FLAG_SIZE = (128, 128)
 EVENT_PICTURE_SIZE = (512, 132)
+
+
+def _open(path) -> Image.Image:
+    """EXIF 회전을 적용해 연다(휴대폰 사진)"""
+    return ImageOps.exif_transpose(Image.open(path))
 
 
 def _fit(src: Image.Image, size: tuple[int, int], fit_mode: str,
@@ -38,7 +43,7 @@ def _fit(src: Image.Image, size: tuple[int, int], fit_mode: str,
 
 def to_flag_tga(src_path: str | Path, dst_path: str | Path,
                 fit_mode: str = "cover", bg_color=(0, 0, 0)) -> None:
-    src = Image.open(src_path).convert("RGB")
+    src = _open(src_path).convert("RGB")
     out = _fit(src, FLAG_SIZE, fit_mode, bg_color)
     dst_path = Path(dst_path)
     dst_path.parent.mkdir(parents=True, exist_ok=True)
@@ -47,7 +52,7 @@ def to_flag_tga(src_path: str | Path, dst_path: str | Path,
 
 def preview_image(src_path: str | Path, fit_mode: str = "cover",
                   bg_color=(0, 0, 0)) -> Image.Image:
-    src = Image.open(src_path).convert("RGB")
+    src = _open(src_path).convert("RGB")
     return _fit(src, FLAG_SIZE, fit_mode, bg_color)
 
 
@@ -56,7 +61,7 @@ def preview_image(src_path: str | Path, fit_mode: str = "cover",
 def to_event_picture_dds(src_path: str | Path, dst_path: str | Path,
                           fit_mode: str = "cover",
                           bg_color=(0, 0, 0)) -> None:
-    src = Image.open(src_path).convert("RGB")
+    src = _open(src_path).convert("RGB")
     out = _fit(src, EVENT_PICTURE_SIZE, fit_mode, bg_color)
     dst_path = Path(dst_path)
     dst_path.parent.mkdir(parents=True, exist_ok=True)
@@ -65,5 +70,5 @@ def to_event_picture_dds(src_path: str | Path, dst_path: str | Path,
 
 def preview_event_picture(src_path: str | Path, fit_mode: str = "cover",
                           bg_color=(0, 0, 0)) -> Image.Image:
-    src = Image.open(src_path).convert("RGB")
+    src = _open(src_path).convert("RGB")
     return _fit(src, EVENT_PICTURE_SIZE, fit_mode, bg_color)

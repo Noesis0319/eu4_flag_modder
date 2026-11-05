@@ -76,6 +76,11 @@ _LINE_RE = re.compile(
     r'^\s+([A-Za-z0-9_.\-]+)\s*:\s*(\d+)\s+"((?:[^"\\]|\\.)*)"\s*$')
 
 
+# 쓸 때의 _yml_escape 역순 — 이스케이프 문자 하나를 한 번만 푼다
+_UNESCAPE = {"n": "\n", '"': '"', "\\": "\\"}
+_UNESCAPE_RE = re.compile(r'\\([n"\\])')
+
+
 def parse_localisation_file(path: Path) -> tuple[str, list[LocEntry]]:
     """단일 yml 파싱. 반환: (lang, entries)"""
     text = path.read_text(encoding="utf-8-sig", errors="replace")
@@ -92,8 +97,7 @@ def parse_localisation_file(path: Path) -> tuple[str, list[LocEntry]]:
         m = _LINE_RE.match(line)
         if m:
             key, ver, val = m.group(1), int(m.group(2)), m.group(3)
-            # 역이스케이프
-            val = val.replace("\\n", "\n").replace('\\"', '"').replace("\\\\", "\\")
+            val = _UNESCAPE_RE.sub(lambda m: _UNESCAPE[m.group(1)], val)
             entries.append(LocEntry(
                 key=key, value=val, version=ver, language=lang))
     return lang, entries

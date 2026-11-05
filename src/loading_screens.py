@@ -12,7 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from .image_processor import _fit
+from .image_processor import _fit, _open
 
 
 LOADING_SCREEN_SIZE = (2048, 1536)
@@ -28,7 +28,7 @@ class LoadingScreenEntry:
 
 def to_loading_screen_dds(src: Path, dst: Path, fit_mode: str = "cover") -> None:
     from PIL import Image
-    img = Image.open(src).convert("RGB")
+    img = _open(src).convert("RGB")
     out = _fit(img, LOADING_SCREEN_SIZE, fit_mode)
     dst.parent.mkdir(parents=True, exist_ok=True)
     out.save(dst, format="DDS")

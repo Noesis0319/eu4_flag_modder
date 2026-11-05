@@ -12,8 +12,11 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
+from decimal import Decimal
 from pathlib import Path
 from typing import Iterable
+
+from .localisation import _yml_escape, parse_localisation_dir
 
 log = logging.getLogger("eu4modmaker")
 
@@ -158,7 +161,8 @@ def _format_modifiers(mods: dict[str, float], indent: str) -> str:
     lines = []
     for k, v in mods.items():
         # 정수면 정수로, 아니면 소수
-        sv = f"{int(v)}" if float(v).is_integer() else f"{v}"
+        sv = (f"{int(v)}" if float(v).is_integer()
+              else format(Decimal(repr(float(v))), "f"))
         lines.append(f"{indent}{k} = {sv}")
     return "\n".join(lines)
 
@@ -198,10 +202,6 @@ def write_idea_block(entry: IdeaGroupEntry) -> str:
         lines.append("\t}")
     lines.append("}")
     return "\n".join(lines)
-
-
-def _yml_escape(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
 def write_idea_locs(entry: IdeaGroupEntry) -> list[str]:
@@ -261,6 +261,8 @@ def parse_idea_groups(mod_dir: Path) -> list[IdeaGroupEntry]:
     if not ideas_dir.is_dir():
         return []
     entries: list[IdeaGroupEntry] = []
+    names = {e.key: e.value for e in parse_localisation_dir(mod_dir)
+             if e.language == "korean"}
     for txt in sorted(ideas_dir.glob("*.txt")):
         try:
             text = txt.read_text(encoding="utf-8-sig", errors="replace")
@@ -291,16 +293,23 @@ def parse_idea_groups(mod_dir: Path) -> list[IdeaGroupEntry]:
             if not m:
                 continue
             key, body = m.group(1), m.group(2)
-            entry = IdeaGroupEntry(key=key, display_name=key)
-            entry.tradition = IdeaSlot(modifiers=_extract_mods(body, "start"))
-            entry.ambition = IdeaSlot(modifiers=_extract_mods(body, "bonus"))
+            entry = IdeaGroupEntry(key=key, display_name=names.get(key, key))
+            entry.tradition = IdeaSlot(
+                display_name=names.get(f"{key}_start", ""),
+                modifiers=_extract_mods(body, "start"))
+            entry.ambition = IdeaSlot(
+                display_name=names.get(f"{key}_bonus", ""),
+                modifiers=_extract_mods(body, "bonus"))
             entry.trigger_tag = _extract_trigger_tag(body)
             entry.free = "free = yes" in body
             # idea_1..7
             ideas = []
             for i in range(1, 8):
                 slot_mods = _extract_named_block(body, f"{key}_{i}")
-                ideas.append(IdeaSlot(modifiers=slot_mods))
+                ideas.append(IdeaSlot(
+                    display_name=names.get(f"{key}_{i}", ""),
+                    description=names.get(f"{key}_{i}_desc", ""),
+                    modifiers=slot_mods))
             entry.ideas = ideas
             entries.append(entry)
     return entries

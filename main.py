@@ -1981,6 +1981,7 @@ class FlagModderApp(tk.Tk):
 
         # 아이디어 그룹 스캔
         loaded_ideas: list[str] = []
+        idea_loc_keys: set[str] = set()  # 아이디어 yml 이 정본인 로컬 키 — 로컬 목록에 다시 담지 않는다
         for ig in parse_idea_groups(mod_dir):
             self.idea_groups.append({
                 "key": ig.key,
@@ -1994,15 +1995,19 @@ class FlagModderApp(tk.Tk):
                     "display_name": ig.ambition.display_name,
                     "modifiers": dict(ig.ambition.modifiers)},
                 "ideas": [{"display_name": s.display_name,
+                           "description": s.description,
                            "modifiers": dict(s.modifiers)}
                           for s in ig.ideas],
             })
             loaded_ideas.append(ig.key)
+            idea_loc_keys.update(idea_loc_keys_of(ig.key))
         self._refresh_idea_groups_tree()
 
         # 로컬라이제이션 스캔
         loaded_loc = 0
         for e in parse_localisation_dir(mod_dir):
+            if e.key in idea_loc_keys:
+                continue
             self.loc_entries.append({
                 "key": e.key, "value": e.value,
                 "language": e.language, "version": e.version})

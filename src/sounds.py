@@ -17,6 +17,7 @@ import os
 import re
 import shutil
 import subprocess
+import wave
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -109,6 +110,14 @@ def _convert_to_wav(src: Path, dst: Path, ff: Path) -> None:
             f"ffmpeg 변환 실패 ({src.name}):\n" + "\n".join(tail))
 
 
+def _check_pcm_wav(path: Path) -> None:
+    try:
+        with wave.open(str(path), "rb"):
+            pass
+    except (wave.Error, EOFError) as exc:
+        raise ValueError(f"PCM WAV 파일이 아님: {path.name} ({exc})") from exc
+
+
 SOUND_KEY_RE = re.compile(r"[A-Za-z0-9_]+")
 
 
@@ -140,6 +149,7 @@ def build_sounds(mod_dir: Path, mod_id: str,
         target_wav = sound_dir / f"{mod_id}_{safe_key}.wav"
 
         if src.suffix.lower() == ".wav":
+            _check_pcm_wav(src)
             shutil.copyfile(src, target_wav)
         else:
             if ff is None:
